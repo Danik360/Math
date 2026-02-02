@@ -39,7 +39,7 @@ public class SnakeController : MonoBehaviour
         // Двигаем тело
         for (int i = 0; i < bodyParts.Count; i++)
         {
-            bodyParts[i].position = bodyPositions[i + 1];
+            bodyParts[i].position = bodyPositions[i + 0];
         }
         
         // Удаляем лишние позиции
@@ -61,7 +61,6 @@ public class SnakeController : MonoBehaviour
         if (collision.CompareTag("Food"))
         {
             Grow();
-            GameManager.Instance.AddScore(10);
             Destroy(collision.gameObject);
         }
     }
