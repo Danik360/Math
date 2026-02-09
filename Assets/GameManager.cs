@@ -4,12 +4,13 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public Text[] AllText;
+    [SerializeField] private Movement snake;
     public static GameManager Instance;
     [SerializeField] public FoodSpawner FoodSp;
     private int Usetext;
-    private int Answer;
-    private int falseAnswer1;
-    private int falseAnswer2;
+    public int Answer;
+    public int falseAnswer1;
+    public int falseAnswer2;
 
     [Header("UI")]
     public Text Text;
