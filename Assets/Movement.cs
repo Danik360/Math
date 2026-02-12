@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;  
 
 public class Movement : MonoBehaviour
 {
@@ -14,10 +15,14 @@ public class Movement : MonoBehaviour
     private List<Transform> bodyParts = new List<Transform>();
     private List<Vector2> bodyPositions = new List<Vector2>();
     [SerializeField] public GameManager GM;
+    [SerializeField] public FoodSpawner FP;
+    public Text tScore;
     public int numberValue;
+    int Score = 0;
 
     void Start()
     {
+        tScore.text = $"Очки: {Score}";
         InvokeRepeating(nameof(Move), moveTime, moveTime);
     }
 
@@ -86,7 +91,10 @@ void OnTriggerEnter2D(Collider2D collision)
         if (numberValue == GM.Answer)
         {
             Debug.Log("✅ ПРАВИЛЬНО! Змейка растет!");
+            int Score =+ 10;
+            tScore.text = $"Очки: ({Score})";
             Grow();  // +1 сегмент
+            FP.Start();
             moveTime += 0.1f;  // чуть быстрее
         }
         else

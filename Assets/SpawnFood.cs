@@ -1,19 +1,20 @@
 using UnityEngine;
-using UnityEngine.UI;  // для Canvas
-
+using UnityEngine.UI;   
 public class FoodSpawner : MonoBehaviour
 {
-    [SerializeField] public GameManager GM;
-    public GameObject foodPrefab;
+    [SerializeField] private GameManager GM;
+    [SerializeField] private GameObject foodPrefab;
     public Vector2 mapSize = new Vector2(20, 20);
 
-    [SerializeField] private Canvas uiCanvas;  // перетащи Canvas в инспекторе
-    [SerializeField] private Camera mainCamera;  // главная камера
-
-    void Start()
+    public void Start()
     {
-        GM.MathExs();
+        if (foodPrefab == null)
+        {
+            Debug.LogError("foodPrefab НЕ назначен в инспекторе!");
+            return;
+        }
 
+        GM.MathExs();
         int[] numbers = { GM.Answer, GM.falseAnswer1, GM.falseAnswer2 };
 
         for (int i = 0; i < 3; i++)
@@ -23,32 +24,39 @@ public class FoodSpawner : MonoBehaviour
                 Random.Range(-mapSize.y / 2f, mapSize.y / 2f)
             );
 
-            GameObject food = Instantiate(foodPrefab, worldPos, Quaternion.identity);
-            Food foodScript = food.GetComponent<Food>();
-            foodScript.numberValue = numbers[i];  // задаем число!
-            GM.TextPosition(worldPos);
+            GameObject obj = Instantiate(foodPrefab, worldPos, Quaternion.identity);
+            Food foodScript = obj.GetComponent<Food>();
+            if (foodScript != null)
+                foodScript.numberValue = numbers[i];
 
-            // TextMeshPro над едой (если используешь)
-            // ...
+            GM.TextPosition(worldPos);
         }
     }
-    
+
     public void SpawnNewFood()
     {
-        // Новая математика!
+        // лучше убить всю старую еду, чем вызывать End() у одного
+        GameObject[] foods = GameObject.FindGameObjectsWithTag("Food");
+        for (int i = 0; i < foods.Length; i++)
+            Destroy(foods[i]);
+
         GM.MathExs();
-        
         int[] numbers = { GM.Answer, GM.falseAnswer1, GM.falseAnswer2 };
-        Vector2 newPos = new Vector2(
-            Random.Range(-mapSize.x / 2f, mapSize.x / 2f),
-            Random.Range(-mapSize.y / 2f, mapSize.y / 2f)
-        );
-        
-        GameObject newFood = Instantiate(foodPrefab, newPos, Quaternion.identity);
-        Food foodScript = newFood.GetComponent<Food>();
-        if (foodScript != null)
+
+        for (int i = 0; i < 3; i++)
         {
-            foodScript.numberValue = numbers[Random.Range(0, 3)];  // случайное число из новых
+            Vector2 worldPos = new Vector2(
+                Random.Range(-mapSize.x / 2f, mapSize.x / 2f),
+                Random.Range(-mapSize.y / 2f, mapSize.y / 2f)
+            );
+
+            GameObject obj = Instantiate(foodPrefab, worldPos, Quaternion.identity);
+            Food foodScript = obj.GetComponent<Food>();
+            if (foodScript != null)
+                foodScript.numberValue = numbers[i];
+
+            GM.TextPosition(worldPos);
         }
     }
 }
+
