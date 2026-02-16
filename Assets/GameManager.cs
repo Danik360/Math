@@ -27,6 +27,11 @@ public class GameManager : MonoBehaviour
         Usetext = 0;
     }
 
+    public void UsetextReset()
+    {
+        Usetext = 0;
+    }
+
     public void GameOver()
     {
         Time.timeScale = 0;  // Пауза игры

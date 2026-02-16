@@ -5,6 +5,7 @@ public class FoodSpawner : MonoBehaviour
     [SerializeField] private GameManager GM;
     [SerializeField] private GameObject foodPrefab;
     public Vector2 mapSize = new Vector2(20, 20);
+    public int Usetext;
 
     public void Start()
     {
@@ -35,6 +36,7 @@ public class FoodSpawner : MonoBehaviour
 
     public void SpawnNewFood()
     {
+        GM.UsetextReset();
         // лучше убить всю старую еду, чем вызывать End() у одного
         GameObject[] foods = GameObject.FindGameObjectsWithTag("Food");
         for (int i = 0; i < foods.Length; i++)

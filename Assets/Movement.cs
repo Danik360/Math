@@ -23,8 +23,12 @@ public class Movement : MonoBehaviour
     void Start()
     {
         tScore.text = $"Очки: {Score}";
+        bodyPositions.Clear();
+        bodyPositions.Add(transform.position); // позиция головы на шаге 0
         InvokeRepeating(nameof(Move), moveTime, moveTime);
     }
+
+
 
     void Update()
     {
@@ -37,31 +41,47 @@ public class Movement : MonoBehaviour
 
     void Move()
     {
-        // Сохраняем текущую позицию головы
+        // сначала запоминаем текущую позицию головы
         bodyPositions.Insert(0, transform.position);
 
-        // Двигаем голову
+        // двигаем голову
         transform.position = (Vector2)transform.position + direction * moveDistance;
 
-        // Двигаем тело
+        // двигаем тело
         for (int i = 0; i < bodyParts.Count; i++)
         {
-            bodyParts[i].position = bodyPositions[i + 0];
+            bodyParts[i].position = bodyPositions[i + 0]; // i+1, потому что [0] — новая позиция головы
         }
 
-        // Удаляем лишние позиции
+        // чистим лишние позиции
         if (bodyPositions.Count > bodyParts.Count + 1)
         {
             bodyPositions.RemoveAt(bodyParts.Count + 1);
         }
     }
 
+
     void Grow()
     {
-        // Создаем новый сегмент тела
-        GameObject newBody = Instantiate(bodyPrefab, bodyPositions[bodyParts.Count], Quaternion.identity);
+        Vector3 spawnPos;
+
+        if (bodyPositions.Count >= 2)
+        {
+            // [0] — позиция головы до текущего шага
+            // [1] — позиция позади головы (где она была шаг назад)
+            spawnPos = bodyPositions[1];
+        }
+        else
+        {
+            // на всякий случай, если что-то пошло не так
+            spawnPos = transform.position - (Vector3)direction * moveDistance;
+        }
+
+        GameObject newBody = Instantiate(bodyPrefab, spawnPos, Quaternion.identity);
         bodyParts.Add(newBody.transform);
     }
+
+
 
 void OnTriggerEnter2D(Collider2D collision)
 {
@@ -91,16 +111,19 @@ void OnTriggerEnter2D(Collider2D collision)
         if (numberValue == GM.Answer)
         {
             Debug.Log("✅ ПРАВИЛЬНО! Змейка растет!");
-            int Score =+ 10;
-            tScore.text = $"Очки: ({Score})";
+            Score = Score + 10;
+            tScore.text = $"Очки: {Score}";
             Grow();  // +1 сегмент
-            FP.Start();
+            FP.SpawnNewFood();
             moveTime += 0.1f;  // чуть быстрее
         }
         else
         {
             Debug.Log($"❌ Неправильно! ({numberValue} != {GM.Answer}) Змейка уменьшается!");
+            Score = Score - 10;
+            tScore.text = $"Очки: {Score}";
             Shrink();  // -1 сегмент
+            FP.SpawnNewFood();
         }
     }
     
